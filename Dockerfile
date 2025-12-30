@@ -1,16 +1,12 @@
-# Используем официальный образ n8n
 FROM n8nio/n8n:latest
 
-# Переменные окружения
+# Устанавливаем переменные окружения
 ENV N8N_HOST=0.0.0.0
 ENV N8N_PORT=5678
-ENV N8N_PROTOCOL=http
-ENV N8N_BASIC_AUTH_ACTIVE=true
-ENV N8N_BASIC_AUTH_USER=admin
-ENV N8N_BASIC_AUTH_PASSWORD=yourpassword
+ENV N8N_PROTOCOL=https
 
-# Экспонируем порт
-EXPOSE 5678
+# Убедимся, что рабочая директория правильная
+WORKDIR /usr/local/lib/node_modules/n8n
 
-# Запуск n8n
-CMD ["n8n"]
+# Запускаем n8n напрямую через npm
+CMD ["npm", "start", "--", "--host=0.0.0.0", "--port=5678"]
