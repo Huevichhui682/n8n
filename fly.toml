@@ -1,53 +1,44 @@
-# Конфигурация для n8n на fly.io
 app = "n8n-bjmkpqrr"
 primary_region = "fra"
 
 [build]
-  # Автодетект Dockerfile или можно указать явно:
-  # dockerfile = "Dockerfile"
+  # Используем официальный образ без изменений
+  image = "n8nio/n8n:latest"
 
-# HTTP сервис для веб-интерфейса n8n
 [http_service]
   internal_port = 5678
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
   processes = ["app"]
 
-  # Проверка здоровья - даем n8n больше времени на запуск
   [[http_service.checks]]
-    interval = "15s"
+    interval = "30s"
     timeout = "10s"
-    grace_period = "2m"
+    grace_period = "5m"
+    method = "get"
     path = "/healthz"
 
-# Определение процессов - РЕШЕНИЕ проблемы с Tini
+# КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: используем node для запуска n8n
 [processes]
-app = "/docker-entrypoint.sh"
+app = "node /usr/local/bin/n8n start --host=0.0.0.0 --port=5678"
 
-# Ресурсы машины
 [vm]
-  memory = "1gb"
+  memory = "2gb"
   cpu_kind = "shared"
   cpus = 1
 
-# КРИТИЧЕСКИ ВАЖНЫЕ переменные окружения для n8n
 [env]
-  N8N_ENCRYPTION_KEY = "1q2w3e123"
-  N8N_PROTOCOL = "https"
+  N8N_ENCRYPTION_KEY = "YOUR_GENERATED_KEY_HERE_MINIMUM_24_CHARS"
+  N8N_HOST = "0.0.0.0"
+  N8N_PORT = "5678"
   WEBHOOK_URL = "https://n8n-bjmkpqrr.fly.dev/"
+  N8N_PROTOCOL = "https"
   N8N_METRICS = "false"
+  # Отключаем генерацию ключа, т.к. он у нас уже есть
   GENERIC_TIMEZONE = "Europe/Berlin"
 
-# Постоянное хранилище для данных n8n
 [[mounts]]
   destination = "/home/node/.n8n"
   source = "n8n_data"
-
-[env]
-  # Принудительно запускаем n8n на всех интерфейсах
-  N8N_HOST = "0.0.0.0"
-  # И изменяем process:
-[processes]
-app = "n8n start --tunnel"
