@@ -44,3 +44,10 @@ app = "/docker-entrypoint.sh"
 [[mounts]]
   destination = "/home/node/.n8n"
   source = "n8n_data"
+
+[env]
+  # Принудительно запускаем n8n на всех интерфейсах
+  N8N_HOST = "0.0.0.0"
+  # И изменяем process:
+[processes]
+app = "n8n start --tunnel"
