@@ -1,10 +1,11 @@
+# Конфигурация для n8n на fly.io
 app = "n8n-bjmkpqrr"
 primary_region = "fra"
 
 [build]
-  # Используем официальный образ без изменений
-  image = "n8nio/n8n:latest"
+  dockerfile = "Dockerfile"
 
+# HTTP сервис
 [http_service]
   internal_port = 5678
   force_https = true
@@ -12,33 +13,44 @@ primary_region = "fra"
   auto_start_machines = true
   min_machines_running = 1
   processes = ["app"]
-
+  
+  # Проверка здоровья (упрощенная)
   [[http_service.checks]]
-    interval = "30s"
-    timeout = "10s"
-    grace_period = "5m"
+    interval = "60s"
+    timeout = "30s"
+    grace_period = "10m"
     method = "get"
     path = "/healthz"
 
-# КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: используем node для запуска n8n
+# Процесс - используем CMD из Dockerfile
 [processes]
-app = "node /usr/local/bin/n8n start --host=0.0.0.0 --port=5678"
+app = "npm start -- --host=0.0.0.0 --port=5678"
 
+# Ресурсы
 [vm]
   memory = "2gb"
   cpu_kind = "shared"
   cpus = 1
 
+# Переменные окружения
 [env]
-  N8N_ENCRYPTION_KEY = "YOUR_GENERATED_KEY_HERE_MINIMUM_24_CHARS"
+  # ОБЯЗАТЕЛЬНО: замените на свой ключ!
+  N8N_ENCRYPTION_KEY = "ваш_ключ_шифрования_здесь_минимум_24_символа"
+  
+  # Базовые настройки
   N8N_HOST = "0.0.0.0"
   N8N_PORT = "5678"
-  WEBHOOK_URL = "https://n8n-bjmkpqrr.fly.dev/"
   N8N_PROTOCOL = "https"
+  WEBHOOK_URL = "https://n8n-bjmkpqrr.fly.dev/"
+  
+  # Оптимизация
+  DB_TYPE = "sqlite"
   N8N_METRICS = "false"
-  # Отключаем генерацию ключа, т.к. он у нас уже есть
+  N8N_DIAGNOSTICS_ENABLED = "false"
+  EXECUTIONS_DATA_PRUNE = "false"
   GENERIC_TIMEZONE = "Europe/Berlin"
 
+# Хранилище для данных
 [[mounts]]
   destination = "/home/node/.n8n"
   source = "n8n_data"
