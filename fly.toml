@@ -1,5 +1,5 @@
 # Конфигурация для n8n на fly.io
-app = "n8n-bjmkpqrr"
+app = "n8n-bjmkpqrt"
 primary_region = "fra"
 
 [build]
@@ -35,13 +35,13 @@ app = "npm start -- --host=0.0.0.0 --port=5678"
 # Переменные окружения
 [env]
   # ОБЯЗАТЕЛЬНО: замените на свой ключ!
-  N8N_ENCRYPTION_KEY = "ваш_ключ_шифрования_здесь_минимум_24_символа"
+  N8N_ENCRYPTION_KEY = "123456789012345678901234"
   
   # Базовые настройки
   N8N_HOST = "0.0.0.0"
   N8N_PORT = "5678"
   N8N_PROTOCOL = "https"
-  WEBHOOK_URL = "https://n8n-bjmkpqrr.fly.dev/"
+  WEBHOOK_URL = "https://n8n-bjmkpqrt.fly.dev/"
   
   # Оптимизация
   DB_TYPE = "sqlite"
