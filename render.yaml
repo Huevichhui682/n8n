@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: n8n-telegram
+    env: docker
+    dockerfilePath: ./Dockerfile
+    
+    # Render автоматически устанавливает RENDER_EXTERNAL_URL
+    envVars:
+      - key: N8N_ENCRYPTION_KEY
+        generateValue: true
+      - key: N8N_HOST
+        value: 0.0.0.0
+      - key: N8N_PORT  
+        value: 5678
+      - key: N8N_PROTOCOL
+        value: https
+      # Не указываем WEBHOOK_URL - будет взят из RENDER_EXTERNAL_URL
+    
+    plan: starter
+    healthCheckPath: /healthz
+    autoDeploy: true
